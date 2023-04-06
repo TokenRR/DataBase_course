@@ -29,7 +29,7 @@ def mark(string):
 def insert(col, val):
     return f'INSERT INTO tbl_ZNO ({col}) VALUES ({val})'
 
-
+# а цей конекшен треба буде і закривати чи 
 create = '''
 CREATE TABLE IF NOT EXISTS tbl_ZNO (
     OUTID uuid,
@@ -191,7 +191,7 @@ WHERE HistTestStatus = 'Зараховано'
 GROUP BY RegName, YEAR;
 '''
 
-tries = 5
+tries = 999_999
 while tries:
     try:
         conn = psycopg2.connect(dbname='znodata', user='postgres', password='postgres', host='db')
@@ -311,15 +311,21 @@ while tries:
                 writer.writerow([str(el) for el in row])
         print(f'\n[{time.strftime("%H:%M:%S", time.localtime())}] ! Created file ZNOdata.csv with statistics !\n')
         
+        
         tries = 0
     
     except psycopg2.OperationalError as err:
-        tries -= 1
         print('\nOperationalError')
         print(err)
-        time.sleep(1.5)
+        time.sleep(10)
     
     except FileNotFoundError as err:
         tries = 0
         print('\nFileNotFoundError')
         print(f'File {err.filename} does not exist')
+
+    except psycopg2.errors.AdminShutdown as err:
+        print(err)
+
+    except psycopg2.InterfaceError as err:
+        print(err)
