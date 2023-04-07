@@ -29,7 +29,7 @@ def mark(string):
 def insert(col, val):
     return f'INSERT INTO tbl_ZNO ({col}) VALUES ({val})'
 
-# а цей конекшен треба буде і закривати чи 
+
 create = '''
 CREATE TABLE IF NOT EXISTS tbl_ZNO (
     OUTID uuid,
