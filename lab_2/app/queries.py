@@ -1,16 +1,13 @@
-def sql_variant():
-    '''Функція повертає строку, яка є SQL-запитом за варіантом №6'''
-    query = '''
-SELECT RegName, YEAR, MIN(HistBall100) AS MIN_HIST_SCORE
-FROM zno
-WHERE HistTestStatus = 'Зараховано'
-GROUP BY RegName, YEAR;
-'''
-    return query
+"""Файл із деякими SQL запитами
+
+"""
+
 
 def sql_create_main_table():
-    '''Функція повертає строку, яка є SQL-запитом для створення бази даних, якщо такої не існує
-       та primary key для колонки outid'''
+    """Функція повертає строку, яка є SQL-запитом для створення бази даних, якщо такої не існує
+       та primary key для колонки outid
+    
+    """
     query = '''
 CREATE TABLE IF NOT EXISTS zno (
     OUTID uuid,
@@ -166,8 +163,12 @@ CREATE TABLE IF NOT EXISTS zno (
 '''
     return query
 
+
 def sql_create_progress_table():
-    '''Функція повертає строку, яка є SQL-запитом створення таблиці прогресу транзакцій'''
+    """Функція повертає строку, яка є SQL-запитом створення таблиці прогресу транзакцій
+
+    """
+
     query = '''
 CREATE TABLE IF NOT EXISTS progress (
     file varchar NOT NULL,
@@ -178,15 +179,19 @@ CREATE TABLE IF NOT EXISTS progress (
 '''
     return query
 
+
 def sql_variant_lab2():
-    '''Функція повертає строку, яка є SQL-запитом за варіантом №6 для лаб 2'''
+    """Функція повертає строку, яка є SQL-запитом за варіантом №6 для лаб 2
+
+    """
+
     query = '''
-SELECT regname, year, MIN(ball100) AS min_hist_score
+SELECT regname.name, test.year, MIN(ball100) AS min_hist_score
 FROM test
 JOIN regname ON regname.id = test.ptregname_id
 JOIN test_subj ON test_subj.id = test.subject_id
 JOIN test_status ON test_status.id = test.status_id
 WHERE test_subj.name = 'Історія України' AND test_status.status = 'Зараховано'
-GROUP BY regname, year;
+GROUP BY regname.name, test.year;
 '''
     return query

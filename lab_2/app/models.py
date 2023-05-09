@@ -1,8 +1,11 @@
-'''*_*'''
+"""Файл із моделями таблиць для Flask-migrate
 
- 
-import uuid
+"""
+
 from app import db
+
+
+import uuid
 
 
 class SexType(db.Model):

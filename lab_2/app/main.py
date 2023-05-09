@@ -1,11 +1,10 @@
 '''
 Лабораторна робота № 2
 Тема: Docker,
-      ОРМ,
-      Міграції,
-      Робота з РСКБД із Python коду,
-      Побудова якісних data ingestion програм на основі Python
-
+      Flask-migrate,
+      PostgreSQL,
+      ERD-діаграми (Power Design)
+      
 Склад команди: Ромацький Микита, КМ-01
                Карачун Анастасія, КМ-02
                Шаповалов Гліб, КМ-03
@@ -18,8 +17,6 @@
 from queries import sql_create_main_table
 from queries import sql_create_progress_table
 from functions import populate
-from functions import create_time_file
-from functions import create_result_file
 
 
 import time
@@ -29,15 +26,17 @@ import logging
 import psycopg2
 
 
-if __name__ == '__main__':
-    '''docker-compose build --no-cache && docker-compose up -d --force-recreate'''
+ZNO2020 = r'./data/OpenDataZNO2020'
+ZNO2021 = r'./data/OpenDataZNO2021'
 
-    ZNO2020 = r'./data/OpenDataZNO2020'
-    ZNO2021 = r'./data/OpenDataZNO2021'
+
+if __name__ == '__main__':
+    """docker-compose build --no-cache && docker-compose up -d --force-recreate
     
+    """
+
     logging.basicConfig(level=logging.INFO, format="[%(asctime)s | %(levelname)s ] %(message)s")
     
-    # Start Lab 1
     tries = 30
     while tries:
         try:
@@ -46,7 +45,6 @@ if __name__ == '__main__':
             logging.info('Connect to DataBase sucсessful')
 
             with connect:
-                start = time.time()
                 cursor = connect.cursor()
 
                 create_main_table = sql_create_main_table()
@@ -71,22 +69,7 @@ if __name__ == '__main__':
 
                 #-------------------------------------# 
                 
-                logging.info('Trying create a file with execution time')
-                stop = time.time()
-                create_time_file(start, stop, 'Time')
-                logging.info('Sucсessful create a file with execution time')
-
-                #-------------------------------------# 
-
-                logging.info('Trying create a file with result query')
-                create_result_file(cursor, 'Result')
-                logging.info('Sucсessful create a file with result query')
-
-                #-------------------------------------#
-                
-                logging.info('Program has finished its work')
-                logging.info('Good luck :)')
-                # time.sleep(120)  
+                logging.info('Data is imported into the database in a single table `zno`')
                 tries = 0
 
         except psycopg2.OperationalError as err:

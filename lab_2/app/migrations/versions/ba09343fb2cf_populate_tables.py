@@ -6,10 +6,16 @@ Create Date: 2023-05-07 00:00:28.546504
 
 """
 
+
+from functions import fill_tables
+from functions import create_result_file_lab2
+
+
 import logging
+import time
+
+
 import psycopg2
-from queries import sql_variant_lab2
-from functions import fill_tables, create_result_file
 from alembic import op
 import sqlalchemy as sa
 
@@ -29,9 +35,7 @@ def upgrade():
     with connect:
         cursor = connect.cursor()
         fill_tables(connect, cursor)
-        create_result_file(cursor, 'Result_lab2')
-        
-
+        create_result_file_lab2(cursor, 'Result_lab2')
 
 
 def downgrade():

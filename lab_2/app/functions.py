@@ -1,4 +1,10 @@
+"""Файл із деякими основними функціями
+
+"""
+
+
 import queries
+
 
 import logging
 import csv
@@ -9,11 +15,11 @@ import itertools
 import psycopg2
 
 
-logging.basicConfig(level=logging.INFO, format="[%(asctime)s | %(levelname)s ] %(message)s")
-
-
 def init_status(connect, folder_with_parts):
-    '''Функція перевірки прогресу внесення даних у базу'''
+    """Функція перевірки прогресу внесення даних у базу
+    
+    """
+
     with connect.cursor() as cursor:
         cursor.execute('SELECT file,status,parts FROM progress WHERE file = %s',(folder_with_parts,))
         res = cursor.fetchone()
@@ -28,7 +34,10 @@ def init_status(connect, folder_with_parts):
 
 
 def fill_table(connect, cursor, file, encoding, year, i):
-    '''Функція внесення даних у базу та зміни прогресу у відповідній таблиці'''
+    """Функція внесення даних у базу та зміни прогресу у відповідній таблиці
+
+    """
+
     if year == 2021:
         str_headers = """outid,birth,sextypename,regname,areaname,tername,regtypename,tertypename,classprofilename,classlangname,eoname,eotypename,eoregname,eoareaname,eotername,eoparent,
 umltest,umlteststatus,umlball100,umlball12,umlball,umladaptscale,umlptname,umlptregname,umlptareaname,umlpttername,
@@ -74,7 +83,10 @@ spatest,spateststatus,spaball100,spaball12,spadpalevel,spaball,spaptname,spaptre
 
 
 def populate(connect, cursor, encoding, folder_with_parts, year):
-    '''Внесення даних у базу, якщо такої транзакції ще не було'''
+    """Внесення даних у базу, якщо такої транзакції ще не було
+
+    """
+
     folder = os.path.abspath(folder_with_parts)
     ls = os.listdir(folder); ls.sort()
 
@@ -86,26 +98,11 @@ def populate(connect, cursor, encoding, folder_with_parts, year):
         print(f'Uploaded [{status}/{parts}]: {folder_with_parts}')
 
 
-def create_time_file(start, stop, name):
-    '''Функція створення файлу зі заміром часу роботи програми завантаження даних до бази'''
-    with open(f'{name}.txt', 'w') as timefile:
-        timefile.write(f'Execution time: {round(stop - start, 0)} s')
-
-
-def create_result_file(cursor, name):
-    '''Функція створення csv файлу із результатом запиту по варіанту'''
-    with open(f'{name}.csv', 'w', newline='', encoding='utf-8') as csvfile:
-        query = queries.sql_variant()
-        cursor.execute(query)
-        writer = csv.writer(csvfile, delimiter=',')
-        writer.writerow([col[0] for col in cursor.description])
-
-        for row in cursor:
-            writer.writerow([str(el) for el in row])
-
-
 def create_result_file_lab2(cursor, name):
-    '''Функція створення csv файлу із результатом запиту по варіанту'''
+    """Функція створення csv файлу із результатом запиту по варіанту
+
+    """
+
     with open(f'{name}.csv', 'w', newline='', encoding='utf-8') as csvfile:
         query = queries.sql_variant_lab2()
         cursor.execute(query)
@@ -117,9 +114,12 @@ def create_result_file_lab2(cursor, name):
 
 
 def fill_tables(connect, cursor):
-    '''Функція заповнення таблиць після міграції'''
+    """Функція переносу даних із великої таблиці zno в таблиці після міграції
+
+    """
     
-    LIM = 40_000
+    LIM = 20_000  # Константа для заповнення таблиці person. Визначає скільки людей за 1 рік ми берем.
+    # Загальна сума записів буде вдвічі більша за цю константу
 
     print('Try fill sex_type table')
     sex_type = ['чоловіча', 'жіноча']
@@ -127,6 +127,7 @@ def fill_tables(connect, cursor):
         cursor.execute(f"""INSERT INTO sex_type (type) VALUES ('{el}');""")
     connect.commit()
     print('Sucсessful fill sex_type table')
+
 
     print('Try fill regname table')
     regname = ['Дніпропетровська область', 'Кіровоградська область', 'Івано-Франківська область', 
@@ -141,12 +142,14 @@ def fill_tables(connect, cursor):
     connect.commit()
     print('Sucсessful fill regname table')
 
+
     print('Try fill test_status table')
     test_status = ['Зараховано', 'Не з’явився', 'Не подолав поріг', 'Не обрано 100-200', 'Анульовано']
     for el in test_status:
         cursor.execute(f"""INSERT INTO test_status (status) VALUES ('{el}');""")
     connect.commit()
     print('Sucсessful fill test_status table')
+
 
     print('Try fill test_subj table')
     test_subj = ['Українська мова та література', 'Українська мова', 'Історія України', 'Математика',
@@ -157,7 +160,8 @@ def fill_tables(connect, cursor):
     connect.commit()
     print('Sucсessful fill test_subj table')
 
-    print('Try fill person table')
+
+    print('Try fill person table where year = 2020')
     cursor.execute(f"""INSERT INTO person (outid, birth, sextype_id, regname_id, areaname, tername,
         regtypename, tertypename, classprofilename, classlangname, eoname, eotypename, eoregname, eoareaname,
         eotername, eoparent)
@@ -167,12 +171,29 @@ def fill_tables(connect, cursor):
         FROM zno
         JOIN sex_type ON zno.SexTypeName = sex_type.type
         JOIN regname ON zno.RegName = regname.name
+        WHERE zno.year=2020
         LIMIT {LIM};""")
     connect.commit()
-    print('Sucсessful fill person table')
+    print('Sucсessful fill person table where year = 2020')
+
+    print('Try fill person table where year = 2021')
+    cursor.execute(f"""INSERT INTO person (outid, birth, sextype_id, regname_id, areaname, tername,
+        regtypename, tertypename, classprofilename, classlangname, eoname, eotypename, eoregname, eoareaname,
+        eotername, eoparent)
+        SELECT zno.OUTID, zno.Birth, sex_type.id, regname.id, zno.AREANAME, zno.TERNAME, zno.RegTypeName,
+        zno.TerTypeName, zno.ClassProfileNAME, zno.ClassLangName, zno.EONAME, zno.EOTypeName, zno.EORegName,
+        zno.EOAreaName, zno.EOTerName, zno.EOParent
+        FROM zno
+        JOIN sex_type ON zno.SexTypeName = sex_type.type
+        JOIN regname ON zno.RegName = regname.name
+        WHERE zno.year=2021
+        LIMIT {LIM};""")
+    connect.commit()
+    print('Sucсessful fill person table where year = 2021')
     
-    subjects = ['UML', 'Ukr', 'Hist', 'Math', 'Phys', 'Chem', 'Bio', 'Geo', 'Eng', 'Fra', 'Deu', 'Spa']
+
     print('Try fill test table')
+    subjects = ['UML', 'Ukr', 'Hist', 'Math', 'Phys', 'Chem', 'Bio', 'Geo', 'Eng', 'Fra', 'Deu', 'Spa']
     for s in subjects:
         print(f'Try fill for {s} subject')
         cursor.execute(f"""INSERT INTO test (outid, year, subject_id, status_id, ball100, ball12, ball, 
@@ -187,5 +208,3 @@ def fill_tables(connect, cursor):
         print(f'Sucсessful fill for {s} subject')
         connect.commit()
     print('Sucсessful fill test table')
-
-

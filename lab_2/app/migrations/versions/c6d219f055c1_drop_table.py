@@ -6,9 +6,12 @@ Create Date: 2023-05-07 10:23:29.357777
 
 """
 
+
+import time
+
+
 from alembic import op
 import sqlalchemy as sa
-import time
 
 
 # revision identifiers, used by Alembic.
@@ -20,7 +23,7 @@ depends_on = None
 
 def upgrade():
     op.drop_table('zno')
-    print('Finish. Good luck')
+    print('Program has completed its work. Good luck :) ')
     time.sleep(120)
 
 
