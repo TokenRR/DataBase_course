@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block title %} Person Edit {% endblock %}
+
+{% block content %}
+<!-- Upper Section -->
+<form method="post">
+    {% for column in columns %}
+    <div class="form-group">
+        <label for="{{ column }}">{{ column }}</label>
+        {% if column in ("sextype", "regname") %}
+        <select id="{{ column }}" name="{{ column }}_id" class="form-select">
+            {% for option in options[column] %}
+            <option value="{{ option.id }}" {{ 'selected' if person[column].id == option.id }}>{{ option }}</option>
+            {% endfor %}
+        </select>
+        {% elif column == "outid" %}
+        <p id="{{ column }}" name="{{ column }}">{{ person[column] }}</p>
+        {% else %}
+        <input class="form-control" id="{{ column }}" name="{{ column }}" placeholder="{{ person[column] }}">
+        {% endif %}
+    </div>
+    {% endfor %}
+    <div class="btn-group">
+        <button type="submit" class="btn btn-primary">Оновити</button>
+        <button type="button" class="btn btn-secondary" onclick="history.back()">Назад</button>
+    </div>
+</form>
+{% endblock %}

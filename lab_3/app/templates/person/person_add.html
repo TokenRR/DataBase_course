@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block title %} Person Add {% endblock %}
+
+{% block content %}
+<!-- Upper Section -->
+<form method="post">
+    {% for column in columns %}
+    <div class="form-group">
+        <label for="{{ column }}">{{ column }}</label>
+        {% if column in ("sextype", "regname") %}
+        <select id="{{ column }}" name="{{ column }}_id" class="form-select">
+            {% for option in options[column] %}
+            <option value="{{ option.id }}">{{ option }}</option>
+            {% endfor %}
+        </select>
+        {% else %}
+        <input class="form-control" id="{{ column }}" name="{{ column }}">
+        {% endif %}
+    </div>
+    {% endfor %}
+    <div class="btn-group">
+        <button type="submit" class="btn btn-primary">Додати</button>
+        <button type="button" class="btn btn-secondary" onclick="history.back()">Назад</button>
+    </div>
+</form>
+{% endblock %}

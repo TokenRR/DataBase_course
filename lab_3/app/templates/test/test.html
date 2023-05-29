@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block title %} Test {% endblock %}
+
+{% block content %}
+<div class="row mt-3">
+    <div class="col-md-6">
+        {% for column in columns %}
+        <div class="form-group">
+            <label for="{{ column }}">{{ column }}</label>
+            <p class="form-control" id="{{ column }}" name="{{ column }}">{{ test[column] }}</p>
+        </div>
+        {% endfor %}
+    </div>
+    <div class="col-md-6">
+        <form class="btn-group" method="post">
+            <a type="button" class="btn btn-primary" href="{{ url_for('test.test_edit', person_uuid=test['outid'], id=test['id']) }}">Редагувати</a>
+            <button type="submit" class="btn btn-danger">Видалити</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
