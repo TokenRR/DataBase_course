@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+
+{% block title %} Persons {% endblock %}
+
+{% block content %}
+<!-- <a type="button" class="btn btn-primary" href="{{ url_for('person.person_add') }}">Додати людину</a> -->
+
+<style>
+  .yellow-text {
+      color: #0f49b6;
+  }
+
+  .yellow-pagination .page-link {
+      color: #0f49b6;
+      background-color: #0f49b6;
+      border-color: #0f49b6;
+  }
+
+  .yellow-pagination .page-link:hover,
+  .yellow-pagination .page-item.active .page-link {
+      background-color: #0f49b6;
+      border-color: #0f49b6;
+  }
+
+  .yellow-column th {
+      color: 30f49b6;
+  }
+</style>
+
+<img src="PostgreSQL_Logo.png" alt="PostgreSQL_Logo Image" width="400" height="300">
+
+<table class="table yellow-column style="margin-top: 50px;">
+  <thead>
+      <tr>
+          {% for column in columns %}
+              <th scope="col" class="yellow-column">{{column}}</th>
+          {% endfor %}
+      </tr>
+  </thead>
+  <tbody>
+      {% for person in pagination %}
+          <tr>
+              {% for column in columns %}
+                  <td class="yellow-column">
+                    <a href="{{ url_for('person.person', uuid=person['outid']) }}">
+                      {{ person[column] }}
+                    </a>
+                  </td>
+              {% endfor %}
+          </tr>
+      {% endfor %}
+  </tbody>
+</table>
+
+{% endblock %}
+
+{% macro render_pagination(pagination, endpoint) %}
+  <div class="page-items yellow-text">
+    {{ pagination.first }} - {{ pagination.last }} of {{ pagination.total }}
+  </div>
+  <ul class="pagination pagination-sm yellow-pagination">
+    {% for page in pagination.iter_pages() %}
+      {% if page %}
+        <li class="page-item yellow-text {{ 'active' if page == pagination.page else '' }}">
+          <a class="page-link yellow-text" href="{{ url_for(endpoint, page=page) }}">{{ page }}</a>
+        </li>
+      {% else %}
+        <span class="page-link yellow-text">…</span>
+      {% endif %}
+    {% endfor %}
+  </ul>
+{% endmacro %}

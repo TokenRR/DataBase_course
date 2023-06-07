@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block title %} Person {% endblock %}
+
+{% block content %}
+<!-- Upper Section -->
+<div class="row mt-3">
+    <div class="col-md-6">
+        {% for column in pcolumns %}
+        <div class="form-group">
+            <label for={{column}}>{{column}}</label>
+            <p class="form-control" id="{{ column }}" name="{{ column }}">{{ person[column] }}</p>
+        </div>
+        {% endfor %}
+    </div>
+    <div class="col-md-6">
+        <form class="btn-group" method="post">
+            <a type="button" class="btn btn-primary" href="{{ url_for('person.person_edit', uuid=person['outid']) }}">Редагувати</a>
+            <button type="submit" class="btn btn-danger">Видалити</button>
+        </form>
+    </div>
+</div>
+<!-- Lower Section -->
+<a type="button" class="btn btn-primary" href="{{ url_for('test.test_add', person_uuid=person['outid']) }}">Додати тест</a>
+<div class="row mt-3">
+    <div class="col">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    {% for column in tcolumns %}
+                    <th>{{ column }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for test in tests %}
+                <tr>
+                    {% for column in tcolumns %}
+                    <td>
+                        <a href="{{ url_for('test.test', id=test['id'], person_uuid=test['outid']) }}">
+                        {{ test[column] }}
+                        </a>
+                    </td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
